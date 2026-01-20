@@ -18,6 +18,9 @@ jobs:
   build:
     # pick a githuhb runner (machine)
     runs-on: ubuntu-latest
+    # declare which github environment to use
+    # Github > Repo > Settings > Environments
+    environment: dev
     # run these steps
     steps:
       # download the git repo (like git clone)
@@ -35,7 +38,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
-            --build-arg NEXT_PUBLIC_APP_ENV=${{ github.environment.NEXT_PUBLIC_APP_ENV }} \
+            --build-arg NEXT_PUBLIC_APP_ENV=${{ vars.NEXT_PUBLIC_APP_ENV }} \
             -t next-lifecycle-demo .
 
   # JOB: deploy to dev (fake)
