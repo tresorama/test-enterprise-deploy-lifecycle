@@ -2,8 +2,12 @@ name: CI
 
 # When?
 on:
-  # on every event of a PR: opening, re-opening, update, new commit on its branch
+  # on these events of a PR
   pull_request:
+    # opened: when the PR is opened
+    # synchronize: when a new git commit is pushed on the PR's branch
+    # reopened: when the PR is re-opened
+    types: [opened, synchronize, reopened]
   # on push on the main branch
   push:
     branches: [main]
