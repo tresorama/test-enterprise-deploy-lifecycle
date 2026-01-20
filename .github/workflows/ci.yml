@@ -14,6 +14,7 @@ on:
 
 # What happens?
 jobs:
+  # JOB: build the docker image
   build:
     # pick a githuhb runner (machine)
     runs-on: ubuntu-latest
@@ -34,3 +35,18 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t next-lifecycle-demo .
+
+  # JOB: deploy to dev (fake)
+  deploy-dev:
+    # run only if the "build" job succeeded
+    needs: build
+    # run only on pull requests events
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    # declare which github environment to use
+    # Github > Repo > Settings > Environments
+    environment: dev
+    # run these steps
+    steps:
+      - name: Fake deploy to DEV
+        run: echo "Deploying Docker image to DEV environment"
