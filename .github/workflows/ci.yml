@@ -1,0 +1,32 @@
+name: CI
+
+# When?
+on:
+  # on every event of a PR: opening, re-opening, update, new commit on its branch
+  pull_request:
+  # on push on the main branch
+  push:
+    branches: [main]
+
+# What happens?
+jobs:
+  build:
+    # pick a githuhb runner (machine)
+    runs-on: ubuntu-latest
+    # run these steps
+    steps:
+      # download the git repo (like git clone)
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      # declare that we need docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      # build the docker image
+      # NOTE: 
+      # this will build the image using the "dockerfile":
+      # - that run "npm ci && npm run lint && npm run build"
+      # - if somethings fails here the build will fail
+      # TODO: add also "npm run test" when you have tests
+      - name: Build Docker image
+        run: |
+          docker build -t next-lifecycle-demo .
