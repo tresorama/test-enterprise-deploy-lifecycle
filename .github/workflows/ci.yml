@@ -50,3 +50,18 @@ jobs:
     steps:
       - name: Fake deploy to DEV
         run: echo "Deploying Docker image to DEV environment"
+
+  # JOB: deploy to staging (fake)
+  deploy-staging:
+    # run only if the "build" job succeeded
+    needs: build
+    # run only on new commits on main branch
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    # declare which github environment to use
+    # Github > Repo > Settings > Environments
+    environment: staging
+    # run these steps
+    steps:
+      - name: Fake deploy to STAGING
+        run: echo "Deploying Docker image to STAGING environment"
