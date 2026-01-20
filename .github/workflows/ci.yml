@@ -65,3 +65,16 @@ jobs:
     steps:
       - name: Fake deploy to STAGING
         run: echo "Deploying Docker image to STAGING environment"
+
+  # JOB: deploy to production (fake)
+  deploy-prod:
+    # run only if the "deploy-staging" job succeeded
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    # declare which github environment to use
+    # Github > Repo > Settings > Environments
+    environment: production
+    # run these steps
+    steps:
+      - name: Fake deploy to PROD
+        run: echo "Deploying Docker image to PRODUCTION"
