@@ -18,7 +18,7 @@ RUN cd next-app && npm ci
 # - copy rest of the code
 COPY next-app ./next-app
 # - build
-RUN cd next-app && npm run build
+RUN cd next-app && npm run lint && npm run build
 # now next js artifacts are produced in the container at "next-app/.next"
 
 
