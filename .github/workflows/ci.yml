@@ -1,0 +1,104 @@
+name: CI
+
+# When?
+on:
+  # on these events of a PR
+  pull_request:
+    # opened: when the PR is opened
+    # synchronize: when a new git commit is pushed on the PR's branch
+    # reopened: when the PR is re-opened
+    types: [opened, synchronize, reopened]
+  # on push on the main branch
+  push:
+    branches: [main]
+
+# What happens?
+jobs:
+  # JOB: build the docker image
+  build-and-push-docker-image-to-ghcr:
+    # grant access
+    permissions:
+      contents: read
+      packages: write
+    # pick a githuhb runner (machine)
+    runs-on: ubuntu-latest
+    # declare which github environment to use
+    # Github > Repo > Settings > Environments
+    environment: dev
+    # run these steps
+    steps:
+      # download the git repo (like git clone)
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      # log in to GHCR (where we will push the docker image)
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      # declare that we need docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      # build the docker image
+      # NOTE: 
+      # this will build the image using the "dockerfile":
+      # - that run "npm ci && npm run lint && npm run build"
+      # - if somethings fails here the build will fail
+      # TODO: add also "npm run test" when you have tests
+      - name: Build and push image
+        run: |
+          # define the image name as a variable
+          IMAGE=ghcr.io/${{ github.repository }}:${{ github.sha }}
+          # build image
+          docker build \
+            --build-arg NEXT_PUBLIC_BUILD_APP_VERSION=${{ vars.NEXT_PUBLIC_BUILD_APP_VERSION }} \
+            -t $IMAGE .
+          # push image
+          docker push $IMAGE
+
+  # JOB: deploy to dev (fake)
+  deploy-dev:
+    # run only if the "build" job succeeded
+    needs: build-and-push-docker-image-to-ghcr
+    # run only on pull requests events
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    # declare which github environment to use
+    # Github > Repo > Settings > Environments
+    environment: dev
+    # run these steps
+    steps:
+      - name: Fake deploy to DEV
+        run: |
+          echo "Deploying image ghcr.io/${{ github.repository }}:${{ github.sha }} to DEV"
+
+  # JOB: deploy to staging (fake)
+  deploy-staging:
+    # run only if the "build" job succeeded
+    needs: build-and-push-docker-image-to-ghcr
+    # run only on new commits on main branch
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    # declare which github environment to use
+    # Github > Repo > Settings > Environments
+    environment: staging
+    # run these steps
+    steps:
+      - name: Fake deploy to STAGING
+        run: |
+          echo "Deploying image ghcr.io/${{ github.repository }}:${{ github.sha }} to STAGING"
+
+  # JOB: deploy to production (fake)
+  deploy-prod:
+    # run only if the "deploy-staging" job succeeded
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    # declare which github environment to use
+    # Github > Repo > Settings > Environments
+    environment: production
+    # run these steps
+    steps:
+      - name: Fake deploy to PROD
+        run: |
+          echo "Deploying image ghcr.io/${{ github.repository }}:${{ github.sha }} to PRODUCTION"
