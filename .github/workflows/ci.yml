@@ -52,7 +52,7 @@ jobs:
           IMAGE=ghcr.io/${{ github.repository }}:${{ github.sha }}
           # build image
           docker build \
-            --build-arg NEXT_PUBLIC_APP_ENV=${{ vars.NEXT_PUBLIC_APP_ENV }} \
+            --build-arg NEXT_PUBLIC_BUILD_APP_VERSION=${{ vars.NEXT_PUBLIC_BUILD_APP_VERSION }} \
             -t $IMAGE .
           # push image
           docker push $IMAGE
