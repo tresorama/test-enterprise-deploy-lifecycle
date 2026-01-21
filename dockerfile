@@ -10,12 +10,12 @@ FROM node:22-alpine AS builder
 WORKDIR /app
 
 # define args that need to be passed with "docker build --build-arg"
-ARG NEXT_PUBLIC_APP_ENV
+ARG NEXT_PUBLIC_BUILD_APP_VERSION
 
 # next js
 
 # read env vars from args
-ENV NEXT_PUBLIC_APP_ENV=$NEXT_PUBLIC_APP_ENV
+ENV NEXT_PUBLIC_BUILD_APP_VERSION=$NEXT_PUBLIC_BUILD_APP_VERSION
 # - copy files from the host to the container
 COPY next-app/package*.json ./next-app/
 # - install dependencies in the container
